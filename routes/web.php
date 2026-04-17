@@ -11,8 +11,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::inertia('dashboard', 'Dashboard')->name('dashboard');
 });
 
-Route::get('/', function () {
+Route::get('/test', function () {
     return view('test');
-});
+})->name('test');
 
 require __DIR__ . '/settings.php';
