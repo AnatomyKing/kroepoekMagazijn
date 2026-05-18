@@ -1,48 +1,89 @@
 <script setup>
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
+import { usePage } from '@inertiajs/vue3';
 
 defineProps({
     user: {
         type: Object,
         required: true,
     },
-    navigation: {
-        type: Array,
-        required: true,
-    },
 });
 
+const page = usePage();
 const menuOpen = ref(false);
+
+const navigation = [
+    {
+        key: 'producten',
+        label: 'Producten',
+        icon: 'i-lucide-camera',
+        href: '/home-producten',
+    },
+    {
+        key: 'mijn-reserveringen',
+        label: 'Mijn Reserveringen',
+        icon: 'i-lucide-shopping-cart',
+        href: '/mijn-reserveringen',
+    },
+    {
+        key: 'producten-beheer',
+        label: 'Producten Beheer',
+        icon: 'i-lucide-package',
+        href: '/admin-producten-beheer',
+    },
+    {
+        key: 'admin-reserveringen',
+        label: 'Alle Reserveringen',
+        icon: 'i-lucide-calendar-check',
+        href: '/admin-reserveringen',
+    },
+];
+
+const currentPath = computed(() => {
+    return (page.url || '').split('?')[0].replace(/\/$/, '') || '/';
+});
+
+function isActive(item) {
+    return currentPath.value === item.href;
+}
 </script>
 
 <template>
     <header class="sticky top-0 z-50 bg-magazijn-purple text-magazijn-white">
         <div class="flex h-[80px] items-center px-4 sm:px-8">
-            <div class="flex min-w-0 shrink-0 items-center gap-4 sm:gap-5 lg:w-[250px]">
+            <UButton
+                to="/home-producten"
+                variant="ghost"
+                class="flex min-w-0 shrink-0 items-center gap-4 rounded-none p-0 hover:bg-transparent sm:gap-5 lg:w-[250px]"
+            >
                 <div class="grid size-12 shrink-0 place-items-center rounded-full bg-magazijn-white text-magazijn-purple">
                     <span class="text-[16px] font-extrabold tracking-[-0.18em]">
                         MM
                     </span>
                 </div>
 
-                <div class="text-[26px] font-bold tracking-[0.08em]">
+                <div class="text-[26px] font-bold tracking-[0.08em] text-magazijn-white">
                     SUMMA
                 </div>
-            </div>
+            </UButton>
 
             <nav class="hidden h-full items-center gap-6 lg:flex">
                 <UButton
                     v-for="item in navigation"
-                    :key="item.label"
-                    :label="item.label"
+                    :key="item.key"
+                    :to="item.href"
                     :icon="item.icon"
                     variant="ghost"
                     size="md"
                     :class="[
                         'h-full rounded-none px-2 text-[16px] font-semibold tracking-wide hover:bg-magazijn-blue-gray/15',
-                        item.active ? 'text-magazijn-white' : 'text-magazijn-blue-gray'
+                        isActive(item) ? 'text-magazijn-white' : 'text-magazijn-blue-gray'
                     ]"
-                />
+                >
+                    <span class="whitespace-nowrap">
+                        {{ item.label }}
+                    </span>
+                </UButton>
             </nav>
 
             <div class="ml-auto hidden items-center gap-8 text-right lg:flex">
@@ -82,13 +123,14 @@ const menuOpen = ref(false);
             <nav class="flex flex-col gap-1 px-6 py-4">
                 <UButton
                     v-for="item in navigation"
-                    :key="item.label"
+                    :key="item.key"
+                    :to="item.href"
                     :icon="item.icon"
                     variant="ghost"
                     size="xl"
                     :class="[
                         'h-[48px] justify-start rounded-none px-2 text-[17px] font-semibold tracking-wide hover:bg-magazijn-blue-gray/15',
-                        item.active ? 'text-magazijn-white' : 'text-magazijn-blue-gray'
+                        isActive(item) ? 'text-magazijn-white' : 'text-magazijn-blue-gray'
                     ]"
                     @click="menuOpen = false"
                 >

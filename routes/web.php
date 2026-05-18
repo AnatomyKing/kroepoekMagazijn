@@ -14,21 +14,17 @@ Route::middleware(['auth', 'verified'])->group(function () {
 # VOOR NU GEBRUIKTE ROUTES, HET LARAVEL PROJECT HEEFT NOG VEEL DEFAULT CODE WAT WEG MOET, MAAR DIT KOMT LATER BIJ EEN BIG CLEAN UP
 # ZO VOOR KOMEN WE DAT ER ZO MIN MOGELIJK DINGEN BREKEN, WANT VOOR DE BACKEND IS SOMMIGE DEFAULT CODE NOG BRUIKBAAR
 
-Route::get('/home-producten', function () {
-    return view('home-producten');
-})->name('home-producten');
+Route::inertia('/home-producten', 'components/magazijn/HomeProducten/HomeProducten')
+    ->name('home-producten');
 
-Route::get('/mijn-reserveringen', function () {
-    return view('mijn-reserveringen');
-})->name('mijn-reserveringen');
+Route::inertia('/mijn-reserveringen', 'components/magazijn/MijnReserveringen/MijnReserveringen')
+    ->name('mijn-reserveringen');
 
-Route::get('/admin-producten-beheer', function () {
-    return view('admin-producten-beheer');
-})->name('admin-producten-beheer');
+Route::inertia('/admin-producten-beheer', 'components/magazijn/AdminProductenBeheer/AdminProductenBeheer')
+    ->name('admin-producten-beheer');
 
-Route::get('/admin-reserveringen', function () {
-    return view('admin-reserveringen');
-})->name('admin-reserveringen');
+Route::inertia('/admin-reserveringen', 'components/magazijn/AdminReserveringen/AdminReserveringen')
+    ->name('admin-reserveringen');
 
 
 
