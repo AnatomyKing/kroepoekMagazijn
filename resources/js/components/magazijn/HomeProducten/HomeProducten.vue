@@ -18,6 +18,16 @@ const navigation = [
         icon: 'i-lucide-shopping-cart',
         active: false,
     },
+    {
+        label: 'Producten Beheer',
+        icon: 'i-lucide-camera',
+        active: false,
+    },
+    {
+        label: 'Alle Reserveringen',
+        icon: 'i-lucide-shopping-cart',
+        active: false,
+    },
 ];
 </script>
 

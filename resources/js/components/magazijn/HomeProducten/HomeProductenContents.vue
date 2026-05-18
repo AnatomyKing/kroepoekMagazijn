@@ -170,29 +170,29 @@ const visibleProducts = computed(() => {
 </script>
 
 <template>
-    <UContainer class="pb-14 pt-[61px]">
+    <UContainer class="px-3 pb-14 pt-[clamp(28px,6vw,61px)] sm:px-5">
         <UPageHeader
             v-bind="page"
             :ui="{
                 root: 'border-0 py-0',
                 container: 'px-0 sm:px-0 lg:px-0',
-                title: 'text-[40px] font-bold leading-none tracking-[-0.03em] text-black',
-                description: 'mt-4 text-[20px] font-normal leading-none tracking-wide text-magazijn-gray'
+                title: 'text-[clamp(38px,7vw,40px)] font-bold leading-tight tracking-[-0.03em] text-black',
+                description: 'mt-2 text-[clamp(18px,4vw,20px)] font-normal leading-snug tracking-wide text-magazijn-gray'
             }"
         />
 
-        <section class="mt-[39px] flex items-center gap-[10px]">
+        <section class="mt-[clamp(26px,6vw,39px)] flex flex-wrap items-center gap-[10px]">
             <UInput
                 v-model="search"
                 icon="i-lucide-search"
                 placeholder="Zoek producten..."
                 variant="outline"
                 size="xl"
-                class="w-[545px] shrink-0"
+                class="min-w-[min(100%,360px)] flex-[999_1_360px]"
                 :ui="{
-            base: 'h-[46px] rounded-[10px] bg-magazijn-white text-[14px] text-magazijn-purple shadow-sm ring-1 ring-magazijn-purple-soft placeholder:text-magazijn-gray focus-visible:ring-2 focus-visible:ring-magazijn-purple',
-            leadingIcon: 'text-magazijn-gray'
-        }"
+                    base: 'h-[46px] rounded-[10px] bg-magazijn-white text-[14px] text-magazijn-purple shadow-sm ring-1 ring-magazijn-purple-soft placeholder:text-magazijn-gray focus-visible:ring-2 focus-visible:ring-magazijn-purple',
+                    leadingIcon: 'text-magazijn-gray'
+                }"
             />
 
             <UButton
@@ -201,26 +201,26 @@ const visibleProducts = computed(() => {
                 variant="ghost"
                 size="xl"
                 :class="[
-            'h-[46px] justify-center rounded-[10px] border-0 px-[23px] text-[16px] font-semibold shadow-sm ring-1 ring-magazijn-purple-soft',
-            category === item
-                ? 'bg-magazijn-purple text-magazijn-white hover:bg-magazijn-purple'
-                : 'bg-magazijn-white text-magazijn-gray hover:bg-magazijn-white hover:text-magazijn-gray'
-        ]"
+                    'h-[46px] justify-center rounded-[10px] border-0 px-[clamp(18px,5vw,23px)] text-[16px] font-semibold shadow-sm ring-1 ring-magazijn-purple-soft',
+                    category === item
+                        ? 'bg-magazijn-purple text-magazijn-white hover:bg-magazijn-purple'
+                        : 'bg-magazijn-white text-magazijn-gray hover:bg-magazijn-white hover:text-magazijn-gray'
+                ]"
                 :ui="{
-            base: 'overflow-visible focus-visible:ring-2 focus-visible:ring-magazijn-purple',
-            label: 'overflow-visible whitespace-nowrap'
-        }"
+                    base: 'overflow-visible focus-visible:ring-2 focus-visible:ring-magazijn-purple',
+                    label: 'overflow-visible whitespace-nowrap'
+                }"
                 @click="category = item"
             >
-        <span class="whitespace-nowrap">
-            {{ item }}
-        </span>
+                <span class="whitespace-nowrap">
+                    {{ item }}
+                </span>
             </UButton>
         </section>
 
         <div
             v-if="visibleProducts.length"
-            class="mt-[48px] grid grid-cols-1 gap-x-[41px] gap-y-[37px] sm:grid-cols-2 lg:grid-cols-4"
+            class="mt-[clamp(34px,7vw,48px)] grid grid-cols-[repeat(auto-fit,minmax(min(100%,280px),1fr))] gap-x-[41px] gap-y-[37px]"
         >
             <HomeProductenTegels
                 v-for="product in visibleProducts"

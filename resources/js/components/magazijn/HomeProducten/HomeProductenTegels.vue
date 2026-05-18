@@ -11,7 +11,7 @@ defineProps({
     <article
         class="overflow-hidden rounded-[15px] border border-magazijn-purple-soft bg-magazijn-white"
     >
-        <div class="relative h-[214px] bg-magazijn-purple">
+        <div class="relative h-[clamp(210px,45vw,214px)] bg-magazijn-purple">
             <div class="absolute left-3 top-3 flex items-center gap-[6px]">
                 <UBadge
                     label="Beschikbaar"
@@ -28,15 +28,15 @@ defineProps({
         </div>
 
         <div class="relative h-[134px] bg-magazijn-white px-3 pt-[16px]">
-            <h2 class="text-[22px] font-bold leading-7 tracking-[-0.02em] text-black">
+            <h2 class="max-w-[calc(100%-48px)] truncate text-[22px] font-bold leading-7 tracking-[-0.02em] text-black">
                 {{ product.name }}
             </h2>
 
-            <p class="mt-[4px] text-[16px] leading-5 text-magazijn-gray">
+            <p class="mt-[4px] truncate text-[16px] leading-5 text-magazijn-gray">
                 {{ product.type }}
             </p>
 
-            <p class="mt-[14px] text-[16px] leading-5 text-magazijn-gray">
+            <p class="mt-[14px] truncate text-[16px] leading-5 text-magazijn-gray">
                 {{ product.info }}
             </p>
 

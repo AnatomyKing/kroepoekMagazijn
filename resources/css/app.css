@@ -44,7 +44,7 @@
     }
 
     body {
-        @apply bg-magazijn-white font-sans text-magazijn-purple antialiased;
+        @apply overflow-x-hidden bg-magazijn-white font-sans text-magazijn-purple antialiased;
     }
 
     button,
