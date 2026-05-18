@@ -12,11 +12,16 @@ export default defineConfig({
             input: [
                 'resources/css/app.css',
                 'resources/js/app.ts',
-                'resources/js/test.ts',
+                'resources/js/home-producten.ts',
+                'resources/js/mijn-reserveringen.ts',
+                'resources/js/admin-reserveringen.ts',
+                'resources/js/admin-producten-beheer.ts',
             ],
             refresh: true,
         }),
-        inertia(),
+        inertia({
+            ssr: false,
+        }),
         tailwindcss(),
         vue({
             template: {
