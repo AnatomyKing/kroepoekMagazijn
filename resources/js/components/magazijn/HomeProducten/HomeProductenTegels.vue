@@ -5,11 +5,18 @@ defineProps({
         required: true,
     },
 });
+
+const emit = defineEmits(['select']);
 </script>
 
 <template>
     <article
-        class="overflow-hidden rounded-[15px] border border-magazijn-purple-soft bg-magazijn-white"
+        class="cursor-pointer overflow-hidden rounded-[15px] border border-magazijn-purple-soft bg-magazijn-white transition hover:-translate-y-[2px] hover:shadow-md"
+        tabindex="0"
+        role="button"
+        @click="emit('select', product)"
+        @keydown.enter="emit('select', product)"
+        @keydown.space.prevent="emit('select', product)"
     >
         <div class="relative h-[clamp(210px,45vw,214px)] bg-magazijn-purple">
             <div class="absolute left-3 top-3 flex items-center gap-[6px]">

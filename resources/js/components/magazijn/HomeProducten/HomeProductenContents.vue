@@ -1,6 +1,7 @@
 <script setup>
 import { computed, ref } from 'vue';
 import HomeProductenTegels from './HomeProductenTegels.vue';
+import HomeProductenTegelsBinnenIn from './HomeProductenTegelsBinnenIn.vue';
 
 const page = {
     title: 'Producten',
@@ -150,6 +151,7 @@ const products = [
 
 const search = ref('');
 const category = ref('Alle');
+const selectedProduct = ref(null);
 
 const visibleProducts = computed(() => {
     const query = search.value.trim().toLowerCase();
@@ -167,10 +169,29 @@ const visibleProducts = computed(() => {
         return categoryMatches && searchMatches;
     });
 });
+
+function openProduct(product) {
+    selectedProduct.value = product;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function closeProduct() {
+    selectedProduct.value = null;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
 </script>
 
 <template>
-    <UContainer class="px-3 pb-14 pt-[clamp(28px,6vw,61px)] sm:px-5">
+    <HomeProductenTegelsBinnenIn
+        v-if="selectedProduct"
+        :product="selectedProduct"
+        @back="closeProduct"
+    />
+
+    <UContainer
+        v-else
+        class="px-3 pb-14 pt-[clamp(28px,6vw,61px)] sm:px-5"
+    >
         <UPageHeader
             v-bind="page"
             :ui="{
@@ -226,6 +247,7 @@ const visibleProducts = computed(() => {
                 v-for="product in visibleProducts"
                 :key="product.id"
                 :product="product"
+                @select="openProduct"
             />
         </div>
 
