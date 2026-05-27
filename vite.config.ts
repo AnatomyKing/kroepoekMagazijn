@@ -7,6 +7,19 @@ import laravel from 'laravel-vite-plugin';
 import { defineConfig } from 'vite';
 
 export default defineConfig({
+    server: {
+        host: '127.0.0.1',
+        port: 5173,
+        strictPort: true,
+        cors: true,
+        origin: 'http://127.0.0.1:5173',
+        hmr: {
+            host: '127.0.0.1',
+            protocol: 'ws',
+            port: 5173,
+        },
+    },
+
     plugins: [
         laravel({
             input: [
@@ -19,10 +32,13 @@ export default defineConfig({
             ],
             refresh: true,
         }),
+
         inertia({
             ssr: false,
         }),
+
         tailwindcss(),
+
         vue({
             template: {
                 transformAssetUrls: {
@@ -31,9 +47,11 @@ export default defineConfig({
                 },
             },
         }),
+
         ui({
             router: 'inertia',
         }),
+
         wayfinder({
             formVariants: true,
         }),
