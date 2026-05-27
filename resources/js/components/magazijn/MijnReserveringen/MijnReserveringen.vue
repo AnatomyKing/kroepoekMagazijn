@@ -3,5 +3,7 @@ import MijnReserveringenContents from './MijnReserveringenContents.vue';
 </script>
 
 <template>
-    <MijnReserveringenContents />
+    <UContainer class="mt-12">
+            <MijnReserveringenContents />
+    </UContainer>
 </template>
