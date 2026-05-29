@@ -110,14 +110,14 @@ const reservations = [
                 />
 
                 <select
-                    class="mt-1 h-12 rounded-lg border border-neutral-200 bg-white px-4 outline-none"
+                    class="mt-1 h-12 rounded-md border border-neutral-200 bg-white px-4 outline-none"
                 >
                     <option>Alle statussen</option>
                 </select>
                 <!-- <USelect v-model="value" :items="items" class="w-48" /> -->
 
                 <select
-                    class="mt-1 h-12 rounded-lg border border-neutral-200 bg-white px-4 outline-none"
+                    class="mt-1 h-12 rounded-md border border-neutral-200 bg-white px-4 outline-none"
                 >
                     <option>Deze maand</option>
                 </select>
