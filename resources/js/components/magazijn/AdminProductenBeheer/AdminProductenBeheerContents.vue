@@ -247,7 +247,14 @@ function openCreate() {
                 @edit="openEdit"
             />
         </div>
-        <UModal :open="isModalOpen" @update:open="isModalOpen = $event">
+        <UModal
+            :open="isModalOpen"
+            :ui="{
+        overlay: 'z-[1000]',
+        content: 'z-[1001]'
+    }"
+            @update:open="isModalOpen = $event"
+        >
             <template #content>
                 <UCard class="w-full max-w-[600px] bg-gray-100">
                     <template #header>

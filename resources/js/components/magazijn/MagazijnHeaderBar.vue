@@ -49,7 +49,7 @@ function isActive(item) {
 </script>
 
 <template>
-    <header class="sticky top-0 z-50 bg-magazijn-purple text-magazijn-white">
+    <header class="sticky top-0 z-40 bg-magazijn-purple text-magazijn-white">
         <div class="flex h-[80px] items-center px-4 sm:px-8">
             <UButton
                 to="/home-producten"
