@@ -15,7 +15,7 @@ const emit = defineEmits(['select', 'play-video']);
     <article
         class="cursor-pointer overflow-hidden rounded-[15px] border border-magazijn-purple-soft bg-magazijn-white transition hover:-translate-y-[2px] hover:shadow-md"
         tabindex="0"
-        role="button"
+        role="region"
         @click="emit('select', product)"
         @keydown.enter="emit('select', product)"
         @keydown.space.prevent="emit('select', product)"
