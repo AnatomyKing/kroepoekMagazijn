@@ -52,7 +52,6 @@ const products = [
         available: 1,
         enabled: true,
         image: '/images/continu_licht/DSC07550.JPG',
-        youtubeVideo: 'https://www.youtube.com/watch?v=oWJ1YAkF9yU',
     },
     {
         id: 3,
@@ -74,7 +73,6 @@ const products = [
         available: 1,
         enabled: true,
         image: '/images/microfoon/DSC07545.JPG',
-        youtubeVideo: 'https://www.youtube.com/watch?v=oWJ1YAkF9yU',
     },
     {
         id: 5,
@@ -96,7 +94,6 @@ const products = [
         available: 1,
         enabled: true,
         image: '/images/osmo_pocket/DSC07505.JPG',
-        youtubeVideo: 'https://www.youtube.com/watch?v=oWJ1YAkF9yU',
     },
     {
         id: 7,
@@ -129,7 +126,6 @@ const products = [
         available: 1,
         enabled: true,
         image: '/images/rgb_tube_magnetisch/DSC07552.JPG',
-        youtubeVideo: 'https://www.youtube.com/watch?v=oWJ1YAkF9yU',
     },
     {
         id: 10,
@@ -140,7 +136,6 @@ const products = [
         available: 1,
         enabled: true,
         image: '/images/sony_set_zv_e10/DSC07510.JPG',
-        youtubeVideo: 'https://www.youtube.com/watch?v=oWJ1YAkF9yU',
     },
     {
         id: 11,
