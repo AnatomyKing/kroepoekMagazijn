@@ -1,5 +1,6 @@
 <script setup>
 import { ref } from 'vue';
+import HomeProductenTegelCarouselViewer from './HomeProductenTegelCarouselViewer.vue';
 
 defineProps({
     product: {
@@ -8,7 +9,7 @@ defineProps({
     },
 });
 
-const emit = defineEmits(['back']);
+const emit = defineEmits(['back', 'play-video']);
 
 const student = {
     name: 'Pien van den Broek',
@@ -35,32 +36,37 @@ function reserveProduct() {
             class="flex items-center gap-[14px] text-[16px] font-semibold text-magazijn-gray transition hover:text-magazijn-purple"
             @click="emit('back')"
         >
-            <span class="size-[30px] rounded-full bg-magazijn-purple" />
+            <span class="grid size-[30px] place-items-center rounded-full bg-magazijn-purple text-magazijn-white">
+                <span class="h-[9px] w-[9px] rotate-45 border-b-2 border-l-2 border-current" />
+            </span>
+
             <span>Terug</span>
         </button>
 
         <section class="mt-[clamp(31px,5vw,32px)] grid gap-[clamp(28px,5vw,57px)] lg:grid-cols-[minmax(360px,591px)_minmax(360px,586px)]">
-            <article
-                class="overflow-hidden rounded-[10px] border border-magazijn-purple-soft bg-magazijn-white"
-            >
-                <div class="relative h-[clamp(260px,32vw,392px)] bg-magazijn-purple" />
+            <article class="overflow-hidden rounded-[10px] border border-magazijn-purple-soft bg-magazijn-white">
+                <div class="h-[clamp(260px,32vw,392px)] overflow-hidden bg-magazijn-purple">
+                    <HomeProductenTegelCarouselViewer
+                        :product="product"
+                        arrows
+                        expandable
+                    />
+                </div>
 
                 <div class="relative min-h-[248px] bg-magazijn-white px-[25px] pt-[13px]">
                     <div class="flex items-center gap-[6px]">
                         <UBadge
                             label="Beschikbaar"
-                            variant="solid"
-                            class="h-[28px] rounded-[9px] bg-magazijn-green px-[28px] text-[13px] font-bold leading-none text-magazijn-white ring-0"
+                            class="h-[28px] rounded-[9px] bg-magazijn-green px-[28px] text-[13px] font-bold text-magazijn-white ring-0"
                         />
 
                         <UBadge
                             :label="product.available"
-                            variant="solid"
-                            class="grid size-[28px] place-items-center rounded-full bg-magazijn-green p-0 text-[13px] font-bold leading-none text-magazijn-white ring-0"
+                            class="grid size-[28px] place-items-center rounded-full bg-magazijn-green p-0 text-[13px] font-bold text-magazijn-white ring-0"
                         />
                     </div>
 
-                    <h1 class="mt-[28px] max-w-[calc(100%-66px)] truncate text-[26px] font-bold leading-8 tracking-[-0.02em] text-black">
+                    <h1 class="mt-7 max-w-[calc(100%-86px)] truncate text-[26px] font-bold leading-8 tracking-[-0.02em] text-black">
                         {{ product.name }}
                     </h1>
 
@@ -68,11 +74,20 @@ function reserveProduct() {
                         {{ product.type }}
                     </p>
 
-                    <p class="mt-[28px] truncate text-[16px] leading-5 text-magazijn-gray">
+                    <p class="mt-7 truncate text-[16px] leading-5 text-magazijn-gray">
                         {{ product.info }}
                     </p>
 
-                    <span class="absolute right-[30px] top-[40px] size-[60px] rounded-full bg-magazijn-purple" />
+                    <UButton
+                        v-if="product.youtubeVideo"
+                        type="button"
+                        icon="i-lucide-play"
+                        aria-label="Bekijk video"
+                        variant="solid"
+                        size="xl"
+                        class="absolute right-[30px] top-10 !grid size-[56px] !place-items-center rounded-full bg-magazijn-purple !p-0 text-magazijn-white shadow-md transition hover:scale-110 hover:bg-magazijn-purple hover:shadow-xl active:scale-95"
+                        @click="emit('play-video', product)"
+                    />
                 </div>
             </article>
 
@@ -100,7 +115,7 @@ function reserveProduct() {
                     </div>
                 </div>
 
-                <div class="mt-[32px]">
+                <div class="mt-8">
                     <label class="block text-[18px] font-bold leading-6 text-black">
                         Naam student
                     </label>
@@ -110,7 +125,7 @@ function reserveProduct() {
                     </p>
                 </div>
 
-                <div class="mt-[29px] grid gap-[24px] sm:grid-cols-2 sm:gap-[84px]">
+                <div class="mt-[29px] grid gap-6 sm:grid-cols-2 sm:gap-[84px]">
                     <div>
                         <label class="block text-[18px] font-bold leading-6 text-black">
                             Startdatum
@@ -119,10 +134,9 @@ function reserveProduct() {
                         <UInput
                             v-model="startDate"
                             type="date"
-                            placeholder="Value"
                             variant="outline"
                             size="xl"
-                            class="mt-[16px] w-full"
+                            class="mt-4 w-full"
                             :ui="{
                                 base: 'h-[41px] rounded-[8px] bg-magazijn-white text-[15px] text-black shadow-sm ring-1 ring-magazijn-purple-soft focus-visible:ring-2 focus-visible:ring-magazijn-purple'
                             }"
@@ -137,10 +151,9 @@ function reserveProduct() {
                         <UInput
                             v-model="endDate"
                             type="date"
-                            placeholder="Value"
                             variant="outline"
                             size="xl"
-                            class="mt-[16px] w-full"
+                            class="mt-4 w-full"
                             :ui="{
                                 base: 'h-[41px] rounded-[8px] bg-magazijn-white text-[15px] text-black shadow-sm ring-1 ring-magazijn-purple-soft focus-visible:ring-2 focus-visible:ring-magazijn-purple'
                             }"
@@ -167,7 +180,6 @@ function reserveProduct() {
 
                 <UButton
                     label="Reserveren"
-                    variant="solid"
                     size="xl"
                     block
                     class="mt-[29px] h-[47px] rounded-[10px] bg-magazijn-purple text-[23px] font-bold tracking-wide text-magazijn-white hover:bg-magazijn-purple"

@@ -1,4 +1,6 @@
 <script setup>
+import HomeProductenTegelCarouselViewer from './HomeProductenTegelCarouselViewer.vue';
+
 defineProps({
     product: {
         type: Object,
@@ -6,7 +8,7 @@ defineProps({
     },
 });
 
-const emit = defineEmits(['select']);
+const emit = defineEmits(['select', 'play-video']);
 </script>
 
 <template>
@@ -18,28 +20,31 @@ const emit = defineEmits(['select']);
         @keydown.enter="emit('select', product)"
         @keydown.space.prevent="emit('select', product)"
     >
-        <div class="relative h-[clamp(210px,45vw,214px)] bg-magazijn-purple">
+        <div class="relative h-[clamp(210px,45vw,214px)] overflow-hidden bg-magazijn-purple">
+            <HomeProductenTegelCarouselViewer
+                :product="product"
+                autoplay-on-hover
+            />
+
             <div class="absolute left-3 top-3 flex items-center gap-[6px]">
                 <UBadge
                     label="Beschikbaar"
-                    variant="solid"
-                    class="h-[19px] rounded-[6px] bg-magazijn-green px-[11px] text-[11px] leading-none text-magazijn-white ring-0"
+                    class="h-[19px] rounded-[6px] bg-magazijn-green px-[11px] text-[11px] text-magazijn-white ring-0"
                 />
 
                 <UBadge
                     :label="product.available"
-                    variant="solid"
-                    class="grid size-[20px] place-items-center rounded-full bg-magazijn-green p-0 text-[11px] leading-none text-magazijn-white ring-0"
+                    class="grid size-5 place-items-center rounded-full bg-magazijn-green p-0 text-[11px] text-magazijn-white ring-0"
                 />
             </div>
         </div>
 
-        <div class="relative h-[134px] bg-magazijn-white px-3 pt-[16px]">
+        <div class="relative h-[134px] bg-magazijn-white px-3 pt-4">
             <h2 class="max-w-[calc(100%-48px)] truncate text-[22px] font-bold leading-7 tracking-[-0.02em] text-black">
                 {{ product.name }}
             </h2>
 
-            <p class="mt-[4px] truncate text-[16px] leading-5 text-magazijn-gray">
+            <p class="mt-1 truncate text-[16px] leading-5 text-magazijn-gray">
                 {{ product.type }}
             </p>
 
@@ -47,7 +52,15 @@ const emit = defineEmits(['select']);
                 {{ product.info }}
             </p>
 
-            <span class="absolute right-[22px] top-[21px] size-[30px] rounded-full bg-magazijn-purple" />
+            <UButton
+                v-if="product.youtubeVideo"
+                type="button"
+                icon="i-lucide-play"
+                aria-label="Bekijk video"
+                variant="solid"
+                class="absolute right-[22px] top-[21px] !grid size-9 !place-items-center rounded-full bg-magazijn-purple !p-0 text-magazijn-white shadow-md transition hover:scale-110 hover:bg-magazijn-purple hover:shadow-lg active:scale-95"
+                @click.stop="emit('play-video', product)"
+            />
         </div>
     </article>
 </template>
