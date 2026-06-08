@@ -41,7 +41,7 @@ const products = [
             '/images/all_in_one_video_kit/DSC07534.JPG',
             '/images/all_in_one_video_kit/DSC07561.JPG',
         ],
-        youtubeVideo: 'https://www.youtube.com/watch?v=O7FIiYsVy3U',
+        youtubeVideo: 'https://www.youtube.com/watch?v=oWJ1YAkF9yU',
     },
     {
         id: 2,
@@ -52,7 +52,7 @@ const products = [
         available: 1,
         enabled: true,
         image: '/images/continu_licht/DSC07550.JPG',
-        youtubeVideo: 'https://www.youtube.com/watch?v=O7FIiYsVy3U',
+        youtubeVideo: 'https://www.youtube.com/watch?v=oWJ1YAkF9yU',
     },
     {
         id: 3,
@@ -63,7 +63,7 @@ const products = [
         available: 1,
         enabled: true,
         image: '/images/led_paneel_statief/DSC07564.JPG',
-        youtubeVideo: 'https://www.youtube.com/watch?v=O7FIiYsVy3U',
+        youtubeVideo: 'https://www.youtube.com/watch?v=oWJ1YAkF9yU',
     },
     {
         id: 4,
@@ -74,7 +74,7 @@ const products = [
         available: 1,
         enabled: true,
         image: '/images/microfoon/DSC07545.JPG',
-        youtubeVideo: 'https://www.youtube.com/watch?v=O7FIiYsVy3U',
+        youtubeVideo: 'https://www.youtube.com/watch?v=oWJ1YAkF9yU',
     },
     {
         id: 5,
@@ -85,7 +85,7 @@ const products = [
         available: 1,
         enabled: true,
         image: '/images/mobile_gimbal/DSC07520.JPG',
-        youtubeVideo: 'https://www.youtube.com/watch?v=O7FIiYsVy3U',
+        youtubeVideo: 'https://www.youtube.com/watch?v=oWJ1YAkF9yU',
     },
     {
         id: 6,
@@ -96,7 +96,7 @@ const products = [
         available: 1,
         enabled: true,
         image: '/images/osmo_pocket/DSC07505.JPG',
-        youtubeVideo: 'https://www.youtube.com/watch?v=O7FIiYsVy3U',
+        youtubeVideo: 'https://www.youtube.com/watch?v=oWJ1YAkF9yU',
     },
     {
         id: 7,
@@ -107,7 +107,7 @@ const products = [
         available: 1,
         enabled: true,
         image: '/images/reportage_flitser_filters/DSC07507.JPG',
-        youtubeVideo: 'https://www.youtube.com/watch?v=O7FIiYsVy3U',
+        youtubeVideo: 'https://www.youtube.com/watch?v=oWJ1YAkF9yU',
     },
     {
         id: 8,
@@ -118,7 +118,7 @@ const products = [
         available: 1,
         enabled: true,
         image: '/images/rgb_continue_licht_paneel/DSC07555.JPG',
-        youtubeVideo: 'https://www.youtube.com/watch?v=O7FIiYsVy3U',
+        youtubeVideo: 'https://www.youtube.com/watch?v=oWJ1YAkF9yU',
     },
     {
         id: 9,
@@ -129,7 +129,7 @@ const products = [
         available: 1,
         enabled: true,
         image: '/images/rgb_tube_magnetisch/DSC07552.JPG',
-        youtubeVideo: 'https://www.youtube.com/watch?v=O7FIiYsVy3U',
+        youtubeVideo: 'https://www.youtube.com/watch?v=oWJ1YAkF9yU',
     },
     {
         id: 10,
@@ -140,7 +140,7 @@ const products = [
         available: 1,
         enabled: true,
         image: '/images/sony_set_zv_e10/DSC07510.JPG',
-        youtubeVideo: 'https://www.youtube.com/watch?v=O7FIiYsVy3U',
+        youtubeVideo: 'https://www.youtube.com/watch?v=oWJ1YAkF9yU',
     },
     {
         id: 11,
