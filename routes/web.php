@@ -1,31 +1,37 @@
 <?php
 
+use App\Http\Controllers\BorrowingController;
 use Illuminate\Support\Facades\Route;
-use Laravel\Fortify\Features;
+use App\Http\Controllers\ProductController;
 
-Route::inertia('/', 'Welcome', [
-    'canRegister' => Features::enabled(Features::registration()),
-])->name('home');
-
-Route::middleware(['auth', 'verified'])->group(function () {
-    Route::inertia('dashboard', 'Dashboard')->name('dashboard');
+Route::get('/', function () {
+    if (Auth::check()) {
+        return redirect('/home-producten');
+    }
+    return redirect('/login');
 });
 
-# VOOR NU GEBRUIKTE ROUTES, HET LARAVEL PROJECT HEEFT NOG VEEL DEFAULT CODE WAT WEG MOET, MAAR DIT KOMT LATER BIJ EEN BIG CLEAN UP
-# ZO VOOR KOMEN WE DAT ER ZO MIN MOGELIJK DINGEN BREKEN, WANT VOOR DE BACKEND IS SOMMIGE DEFAULT CODE NOG BRUIKBAAR
+Route::middleware(['auth', 'verified'])->group(function () {
+    // Voor alle ingelogde gebruikers
+    Route::inertia('/home-producten', 'components/magazijn/HomeProducten/HomeProducten')->name('home-producten');
+    Route::inertia('/mijn-reserveringen', 'components/magazijn/MijnReserveringen/MijnReserveringen')->name('mijn-reserveringen');
 
-Route::inertia('/home-producten', 'components/magazijn/HomeProducten/HomeProducten')
-    ->name('home-producten');
+    // Alleen admin
+    Route::middleware(['role:admin'])->group(function () {
+        Route::inertia('/admin-producten-beheer', 'components/magazijn/AdminProductenBeheer/AdminProductenBeheer')->name('admin-producten-beheer');
+        Route::inertia('/admin-reserveringen', 'components/magazijn/AdminReserveringen/AdminReserveringen')->name('admin-reserveringen');
 
-Route::inertia('/mijn-reserveringen', 'components/magazijn/MijnReserveringen/MijnReserveringen')
-    ->name('mijn-reserveringen');
+        // API endpoints voor admin
+        Route::get('/api/admin/reservations', [BorrowingController::class, 'index']);
+        Route::delete('/api/admin/reservations/{id}', [BorrowingController::class, 'destroy']);
+    });
 
-Route::inertia('/admin-producten-beheer', 'components/magazijn/AdminProductenBeheer/AdminProductenBeheer')
-    ->name('admin-producten-beheer');
-
-Route::inertia('/admin-reserveringen', 'components/magazijn/AdminReserveringen/AdminReserveringen')
-    ->name('admin-reserveringen');
-
+    // Voor alle ingelogde gebruikers (ook admin) – maar admin ziet meer
+    Route::get('/api/items', [ProductController::class, 'index']); // home producten
+    Route::get('/api/my-reservations', [BorrowingController::class, 'userReservations']);
+    Route::post('/borrowings', [BorrowingController::class, 'store']);
+    Route::post('/borrowings/{id}/return', [BorrowingController::class, 'returnItem']);
+});
 
 
 require __DIR__ . '/settings.php';

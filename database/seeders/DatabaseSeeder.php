@@ -2,26 +2,22 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use App\Models\User;
+use App\Models\Item;
+use App\Models\Borrowing;
 
 class DatabaseSeeder extends Seeder
 {
-    /**
-     * Seed the application's database.
-     */
-    public function run(): void
+    public function run()
     {
-        // User::factory(10)->create();
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-        ]);
+        // Maak eerst rollen en admin/user (via RoleSeeder)
+        $this->call(RoleSeeder::class);
 
-        $this->call([
-            ItemSeeder::class,
-            BorrowingSeeder::class,
-        ]);
+        // Maak 20 items
+        Item::factory(20)->create();
+
+        // Maak 50 reserveringen (koppelt zich aan bestaande users en items)
+        Borrowing::factory(50)->create();
     }
 }

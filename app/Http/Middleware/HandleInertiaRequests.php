@@ -17,15 +17,12 @@ class HandleInertiaRequests extends Middleware
         return parent::version($request);
     }
 
-    public function share(Request $request): array
+    public function share(Request $request)
     {
-        return [
-            ...parent::share($request),
-            'name' => config('app.name'),
+        return array_merge(parent::share($request), [
             'auth' => [
-                'user' => $request->user(),
+                'user' => $request->user() ? $request->user()->load('role') : null,
             ],
-            'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
-        ];
+        ]);
     }
 }
