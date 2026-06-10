@@ -28,8 +28,7 @@ return new class extends Migration
 
             $table->boolean('late')->default(false);
 
-            // corresponds to the "Borrowing Int" field in diagram
-            $table->integer('borrowing')->default(1);
+            $table->unsignedInteger('quantity')->default(1);
 
             $table->text('commentary')->nullable();
 
