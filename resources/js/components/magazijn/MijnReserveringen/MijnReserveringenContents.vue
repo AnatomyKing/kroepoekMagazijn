@@ -25,9 +25,13 @@ const reservations = [
         <div
             class="flex items-center gap-5 rounded-lg border border-neutral-200 bg-white p-6 shadow-sm"
         >
-            <div
-                class="flex h-14 w-14 items-center justify-center rounded-xl border border-neutral-300"
-            ></div>
+            <!-- Naam -->
+            <div class="flex h-14 w-14 items-center justify-center">
+                <UIcon
+                    name="i-lucide-user"
+                    class="h-10 w-10 text-neutral-600"
+                />
+            </div>
 
             <div>
                 <h1 class="text-2xl font-semibold">Naam</h1>
@@ -43,9 +47,13 @@ const reservations = [
                 class="rounded-lg border border-neutral-200 bg-white p-6 shadow-sm"
             >
                 <div class="flex items-center gap-4">
-                    <div
-                        class="flex h-14 w-14 items-center justify-center rounded-xl border border-neutral-300"
-                    ></div>
+                    <!-- Totaal -->
+                    <div class="flex h-14 w-14 items-center justify-center">
+                        <UIcon
+                            name="i-lucide-package"
+                            class="h-8 w-8 text-neutral-600"
+                        />
+                    </div>
 
                     <div>
                         <h2 class="text-2xl font-semibold">3</h2>
@@ -60,9 +68,15 @@ const reservations = [
                 class="rounded-lg border border-neutral-200 bg-white p-6 shadow-sm"
             >
                 <div class="flex items-center gap-4">
+                    <!-- Actief -->
                     <div
-                        class="flex h-14 w-14 items-center justify-center rounded-xl border border-neutral-300"
-                    ></div>
+                        class="flex h-14 w-14 items-center justify-center rounded-xl"
+                    >
+                        <UIcon
+                            name="i-lucide-clock-3"
+                            class="h-8 w-8 text-neutral-600"
+                        />
+                    </div>
 
                     <div>
                         <h2 class="text-2xl font-semibold">3</h2>
@@ -78,8 +92,13 @@ const reservations = [
             >
                 <div class="flex items-center gap-4">
                     <div
-                        class="flex h-14 w-14 items-center justify-center rounded-xl border border-neutral-300"
-                    ></div>
+                        class="flex h-14 w-14 items-center justify-center rounded-xl"
+                    >
+                        <UIcon
+                            name="i-lucide-check-circle-2"
+                            class="h-8 w-8 text-neutral-600"
+                        />
+                    </div>
 
                     <div>
                         <h2 class="text-2xl font-semibold">3</h2>

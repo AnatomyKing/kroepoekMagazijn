@@ -310,7 +310,6 @@ const visibleProducts = computed(() => {
                         <p class="text-sm text-magazijn-gray">Product</p>
                     </div>
                 </div>
-                
 
                 <!-- Right -->
                 <div class="flex items-center gap-5">
@@ -340,7 +339,6 @@ const visibleProducts = computed(() => {
                         <p class="text-sm text-magazijn-gray">Product</p>
                     </div>
                 </div>
-                
 
                 <!-- Right -->
                 <div class="flex items-center gap-5">

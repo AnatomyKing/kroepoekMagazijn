@@ -14,9 +14,12 @@ defineProps({
         class="flex flex-col justify-between gap-6 rounded-lg border border-neutral-200 bg-white p-6 shadow-sm md:flex-row md:items-center"
     >
         <div class="flex items-center gap-5">
-            <div
-                class="flex h-14 w-14 items-center justify-center rounded-xl border border-neutral-300"
-            ></div>
+            <div class="flex h-14 w-14 items-center justify-center rounded-xl">
+                <UIcon
+                    name="i-lucide-user"
+                    class="h-10 w-10 text-neutral-600"
+                />
+            </div>
 
             <div>
                 <h3 class="text-2xl font-semibold">
