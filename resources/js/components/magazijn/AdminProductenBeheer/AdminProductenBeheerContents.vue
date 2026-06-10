@@ -256,7 +256,7 @@ function openCreate() {
             @update:open="isModalOpen = $event"
         >
             <template #content>
-                <UCard class="w-full max-w-[600px] bg-gray-100">
+                <UCard class="w-full max-w-[600px] overflow-y-auto bg-gray-100">
                     <template #header>
                         <h2 class="text-lg font-bold">
                             {{
@@ -272,21 +272,6 @@ function openCreate() {
                         :product="editingProduct"
                         :is-new="isCreating"
                     />
-
-                    <template #footer>
-                        <div class="flex justify-end gap-3">
-                            <UButton
-                                variant="ghost"
-                                @click="isModalOpen = false"
-                            >
-                                Annuleren
-                            </UButton>
-
-                            <UButton class="bg-magazijn-purple text-white">
-                                Opslaan
-                            </UButton>
-                        </div>
-                    </template>
                 </UCard>
             </template>
         </UModal>

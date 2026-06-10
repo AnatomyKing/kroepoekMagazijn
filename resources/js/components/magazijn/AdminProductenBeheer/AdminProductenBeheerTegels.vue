@@ -1,9 +1,10 @@
 <script setup>
 import StatusBadge from '@/components/StatusBadge.vue';
-defineProps({
+const props = defineProps({
     product: Object
 })
 
+const emit = defineEmits(['edit'])
 </script>
 
 <template>
@@ -47,6 +48,7 @@ defineProps({
                     icon="i-lucide-pencil"
                     color="black"
                     variant="ghost"
+                    @click="emit('edit', props.product)"
                 />
 
                 <UButton
