@@ -11,23 +11,27 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('items', function (Blueprint $table) {
-            $table->id();
-
-            $table->string('item_name');
-            $table->boolean('availability')->default(true);
-
-            $table->text('description')->nullable();
-            $table->string('category')->nullable();
-
-            $table->string('image')->nullable();
-
-            $table->string('status')->default('available');
-
-            $table->string('video_link')->nullable();
-
-            $table->timestamps();
-        });
+    Schema::create('items', function (Blueprint $table) {
+        $table->id();
+    
+        $table->string('item_name');
+    
+        $table->text('description')->nullable();
+        $table->string('category')->nullable();
+    
+        $table->string('image')->nullable();
+    
+        // Inventory
+        $table->unsignedInteger('quantity_total')->default(1);
+        $table->unsignedInteger('quantity_available')->default(1);
+    
+        // Optional status field
+        $table->string('status')->default('available');
+    
+        $table->string('video_link')->nullable();
+    
+        $table->timestamps();
+    });
     }
 
     /**

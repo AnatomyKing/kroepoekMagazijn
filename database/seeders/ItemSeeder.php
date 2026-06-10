@@ -12,34 +12,49 @@ class ItemSeeder extends Seeder
         Item::insert([
             [
                 'item_name' => 'Arduino Uno',
-                'availability' => true,
                 'description' => 'Microcontroller board',
-                'category' => 'Electronics',
-                'image' => 'arduino.jpg',
+
+                'category' => null,
+                'image' => null,
+
+                'quantity_total' => 10,
+                'quantity_available' => 10,
+
                 'status' => 'available',
                 'video_link' => null,
+
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
                 'item_name' => 'Raspberry Pi 5',
-                'availability' => true,
                 'description' => 'Single board computer',
-                'category' => 'Computing',
-                'image' => 'rpi5.jpg',
+
+                'category' => null,
+                'image' => null,
+
+                'quantity_total' => 5,
+                'quantity_available' => 5,
+
                 'status' => 'available',
                 'video_link' => null,
+
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
                 'item_name' => '3D Printer',
-                'availability' => false,
                 'description' => 'Ender 3 printer',
-                'category' => 'Manufacturing',
-                'image' => 'ender3.jpg',
-                'status' => 'borrowed',
+
+                'category' => null,
+                'image' => null,
+
+                'quantity_total' => 1,
+                'quantity_available' => 0,
+
+                'status' => 'unavailable',
                 'video_link' => null,
+
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
