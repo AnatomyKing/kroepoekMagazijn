@@ -260,6 +260,7 @@ function replaceImage(event: Event) {
                 :ui="{
                     base: 'h-[46px] rounded-[10px] bg-white text-black ring-1 ring-magazijn-purple-soft placeholder:text-magazijn-blue-gray focus-visible:ring-2 focus-visible:ring-magazijn-purple',
                 }"
+                class="w-full"
             />
 
             <p
@@ -285,6 +286,7 @@ function replaceImage(event: Event) {
                     content: 'z-[9999]',
                 }"
                 :portal="'body'"
+                class="w-full"
             />
 
             <p
@@ -308,6 +310,7 @@ function replaceImage(event: Event) {
                 :ui="{
                     base: 'rounded-[10px] bg-white text-black ring-1 ring-magazijn-purple-soft placeholder:text-magazijn-blue-gray focus-visible:ring-2 focus-visible:ring-magazijn-purple',
                 }"
+                class="w-full"
             />
 
             <p
@@ -494,10 +497,11 @@ function replaceImage(event: Event) {
                 :items="quantities"
                 size="xl"
                 :ui="{
-                    base: 'h-[46px] rounded-[10px] bg-white text-black ring-1 ring-magazijn-purple-soft focus-visible:ring-2 focus-visible:ring-magazijn-purple',
+                    base: 'h-[46px] w-full rounded-[10px] bg-white text-black ring-1 ring-magazijn-purple-soft focus-visible:ring-2 focus-visible:ring-magazijn-purple',
                     content: 'z-[9999]',
                 }"
                 :portal="'body'"
+                
             />
 
             <p
@@ -542,6 +546,7 @@ function replaceImage(event: Event) {
                 :ui="{
                     base: 'h-[46px] rounded-[10px] bg-white text-black ring-1 ring-magazijn-purple-soft placeholder:text-magazijn-blue-gray focus-visible:ring-2 focus-visible:ring-magazijn-purple',
                 }"
+                class="w-full"
             />
 
             <p
