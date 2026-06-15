@@ -63,13 +63,13 @@ function formatReadableDate(value: string | number | null | undefined) {
         }"
     >
         <div
-            class="flex flex-col gap-3 px-5 py-4 sm:flex-row sm:items-center sm:justify-between"
+            class="flex flex-col gap-4 px-5 py-4 sm:flex-row sm:items-center sm:justify-between"
         >
-            <div class="flex items-center gap-5">
-                <div class="h-16 w-16 rounded-[18px] bg-magazijn-purple" />
+            <div class="flex min-w-0 items-center gap-5">
+                <div class="h-16 w-16 shrink-0 rounded-[18px] bg-magazijn-purple" />
 
-                <div>
-                    <h2 class="text-lg font-semibold text-black">
+                <div class="min-w-0">
+                    <h2 class="truncate text-lg font-semibold text-black">
                         {{ reservation.item.item_name }}
                     </h2>
 
@@ -77,6 +77,16 @@ function formatReadableDate(value: string | number | null | undefined) {
                         {{ reservation.user.name }} ({{
                             reservation.user.email
                         }})
+                    </p>
+
+                    <p
+                        v-if="reservation.commentary"
+                        class="mt-1 max-w-[520px] text-sm text-magazijn-gray"
+                    >
+                        <span class="font-semibold text-black">
+                            Opmerking:
+                        </span>
+                        {{ reservation.commentary }}
                     </p>
                 </div>
             </div>
@@ -112,7 +122,7 @@ function formatReadableDate(value: string | number | null | undefined) {
 
                 <UButton
                     icon="i-lucide-trash"
-                    color="warning"
+                    color="error"
                     variant="ghost"
                     @click="emit('delete', reservation.id)"
                 />
