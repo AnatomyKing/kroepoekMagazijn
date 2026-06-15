@@ -27,7 +27,9 @@ const modalOpen = ref(false);
 const activeIndex = ref(0);
 
 const productImages = computed(() => {
-    return [props.product.image, ...(props.product.images || [])].filter(Boolean);
+    return [
+        ...new Set([props.product.image, ...(props.product.images || [])]),
+    ].filter(Boolean);
 });
 
 const mainImage = computed(() => productImages.value[0] || null);
@@ -41,8 +43,14 @@ const carouselAutoplay = computed(() => {
 });
 
 const controlsVisible = computed(() => hovering.value && !modalOpen.value);
-const showExpandButton = computed(() => props.expandable && hasImage.value && controlsVisible.value);
-const showNextButton = computed(() => props.arrows && hasMultipleImages.value && controlsVisible.value);
+
+const showExpandButton = computed(() => {
+    return props.expandable && hasImage.value && controlsVisible.value;
+});
+
+const showNextButton = computed(() => {
+    return props.arrows && hasMultipleImages.value && controlsVisible.value;
+});
 
 function nextImage() {
     carousel.value?.emblaApi?.scrollNext();
@@ -83,7 +91,7 @@ function openModal() {
                 root: 'h-full w-full overflow-hidden',
                 viewport: 'h-full w-full overflow-hidden',
                 container: 'h-full !-ms-0',
-                item: 'h-full basis-full !ps-0'
+                item: 'h-full basis-full !ps-0',
             }"
             @select="activeIndex = $event"
         >
@@ -114,7 +122,7 @@ function openModal() {
             class="absolute right-4 top-4 z-20 !grid size-10 !place-items-center rounded-full bg-magazijn-purple !p-0 text-magazijn-white shadow-md transition hover:scale-110 hover:bg-magazijn-purple hover:shadow-lg active:scale-95"
             :ui="{
                 base: '!gap-0 !p-0',
-                leadingIcon: 'size-5 shrink-0'
+                leadingIcon: 'size-5 shrink-0',
             }"
             @click.stop="openModal"
         />
@@ -128,7 +136,7 @@ function openModal() {
             class="absolute right-4 top-1/2 z-20 !grid size-11 -translate-y-1/2 !place-items-center rounded-full bg-magazijn-purple !p-0 text-magazijn-white shadow-md transition hover:scale-110 hover:bg-magazijn-purple hover:shadow-lg active:scale-95"
             :ui="{
                 base: '!gap-0 !p-0',
-                leadingIcon: 'size-6 shrink-0'
+                leadingIcon: 'size-6 shrink-0',
             }"
             @click.stop="nextImage"
         />

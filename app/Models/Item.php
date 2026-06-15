@@ -11,12 +11,23 @@ class Item extends Model
 
     protected $fillable = [
         'item_name',
+        'type',
         'description',
         'category',
         'image',
+        'images',
         'quantity_total',
         'quantity_available',
         'status',
-        'video_link'
+        'video_link',
     ];
+
+    protected $casts = [
+        'images' => 'array',
+    ];
+
+    public function borrowings()
+    {
+        return $this->hasMany(Borrowing::class);
+    }
 }

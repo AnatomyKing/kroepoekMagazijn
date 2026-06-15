@@ -2,33 +2,45 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
 use App\Models\Role;
 use App\Models\User;
+use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
 class RoleSeeder extends Seeder
 {
-    public function run()
+    public function run(): void
     {
-        // Rollen aanmaken
-        $adminRole = Role::create(['name' => 'admin']);
-        $userRole = Role::create(['name' => 'user']);
+        $adminRole = Role::updateOrCreate(
+            ['name' => 'admin'],
+            ['name' => 'admin']
+        );
 
-        // Admin gebruiker
-        User::create([
-            'name' => 'Admin User',
-            'email' => 'admin@example.com',
-            'password' => Hash::make('password'),
-            'role_id' => $adminRole->id,
-        ]);
+        $userRole = Role::updateOrCreate(
+            ['name' => 'user'],
+            ['name' => 'user']
+        );
 
-        // Normale gebruiker
-        User::create([
-            'name' => 'Normale Gebruiker',
-            'email' => 'user@example.com',
-            'password' => Hash::make('password'),
-            'role_id' => $userRole->id,
-        ]);
+        $admin = User::updateOrCreate(
+            ['email' => 'admin@example.com'],
+            [
+                'name' => 'Admin User',
+                'password' => Hash::make('password'),
+            ]
+        );
+
+        $admin->role_id = $adminRole->id;
+        $admin->save();
+
+        $user = User::updateOrCreate(
+            ['email' => 'user@example.com'],
+            [
+                'name' => 'Normale Gebruiker',
+                'password' => Hash::make('password'),
+            ]
+        );
+
+        $user->role_id = $userRole->id;
+        $user->save();
     }
 }

@@ -3,6 +3,14 @@ import { computed, onMounted, ref } from 'vue';
 import AdminProductenBeheerTegels from './AdminProductenBeheerTegels.vue';
 import AdminProductenBeheerEdit from './AdminProductenBeheerEdit.vue';
 
+type ProductImage = {
+    id: string;
+    path: string | null;
+    previewUrl?: string | null;
+    file?: File | null;
+    isNew?: boolean;
+};
+
 type Product = {
     id?: number;
     name: string;
@@ -11,8 +19,17 @@ type Product = {
     category: string;
     available: number;
     enabled: boolean;
+
     image?: string | null;
-    imageFile?: File | null;
+    imageUrl?: string | null;
+
+    images?: string[];
+    imageUrls?: string[];
+
+    imageEntries?: ProductImage[];
+    frontImageId?: string | null;
+
+    youtubeVideo?: string | null;
 };
 
 type FormErrors = Record<string, string | string[]>;
@@ -39,9 +56,13 @@ const visibleProducts = computed(() => {
     return products.value.filter((product) => {
         if (!query) return true;
 
-        return [product.name, product.type, product.info, product.category].some(
-            (value) => String(value || '').toLowerCase().includes(query),
-        );
+        return [
+            product.name,
+            product.type,
+            product.info,
+            product.category,
+            product.youtubeVideo,
+        ].some((value) => String(value || '').toLowerCase().includes(query));
     });
 });
 
@@ -53,7 +74,62 @@ function getCsrfToken() {
     );
 }
 
+function normalizeImageUrl(path?: string | null): string | undefined {
+    if (!path) return undefined;
+
+    if (path.startsWith('http://') || path.startsWith('https://')) {
+        return path;
+    }
+
+    if (path.startsWith('/')) {
+        return path;
+    }
+
+    if (path.startsWith('images/')) {
+        return `/${path}`;
+    }
+
+    return `/storage/${path}`;
+}
+
+function buildImageEntries(item: any): ProductImage[] {
+    const entries: ProductImage[] = [];
+
+    const mainPath = item.image || null;
+    const mainUrl = item.image_url || normalizeImageUrl(mainPath);
+
+    if (mainPath || mainUrl) {
+        entries.push({
+            id: `main-${item.id}`,
+            path: mainPath,
+            previewUrl: mainUrl,
+            file: null,
+            isNew: false,
+        });
+    }
+
+    const rawExtraImages = Array.isArray(item.images) ? item.images : [];
+    const urlExtraImages = Array.isArray(item.images_urls)
+        ? item.images_urls
+        : [];
+
+    rawExtraImages.forEach((path: string, index: number) => {
+        entries.push({
+            id: `extra-${item.id}-${index}`,
+            path,
+            previewUrl: urlExtraImages[index] || normalizeImageUrl(path),
+            file: null,
+            isNew: false,
+        });
+    });
+
+    return entries;
+}
+
 function mapBackendProduct(item: any): Product {
+    const imageEntries = buildImageEntries(item);
+    const frontImage = imageEntries[0] || null;
+
     return {
         id: item.id,
         name: item.item_name || '',
@@ -61,9 +137,23 @@ function mapBackendProduct(item: any): Product {
         info: item.description || '',
         category: item.category || '',
         available: Number(item.quantity_available ?? 0),
-        enabled: item.status ? item.status === 'available' : Number(item.quantity_available ?? 0) > 0,
-        image: item.image || null,
-        imageFile: null,
+        enabled: item.status
+            ? item.status === 'available'
+            : Number(item.quantity_available ?? 0) > 0,
+
+        image: frontImage?.path || item.image || null,
+        imageUrl:
+            frontImage?.previewUrl ||
+            item.image_url ||
+            normalizeImageUrl(item.image),
+
+        images: Array.isArray(item.images) ? item.images : [],
+        imageUrls: Array.isArray(item.images_urls) ? item.images_urls : [],
+
+        imageEntries,
+        frontImageId: frontImage?.id || null,
+
+        youtubeVideo: item.video_link || '',
     };
 }
 
@@ -72,6 +162,7 @@ function normalizeErrors(serverErrors: FormErrors): FormErrors {
         item_name: 'name',
         description: 'info',
         quantity_available: 'available',
+        video_link: 'youtubeVideo',
     };
 
     const mapped: FormErrors = {};
@@ -123,8 +214,8 @@ function validateProduct(product: Product) {
         newErrors.category = 'Categorie is verplicht';
     }
 
-    if (!product.available || Number(product.available) <= 0) {
-        newErrors.available = 'Aantal moet minimaal 1 zijn';
+    if (Number(product.available) < 0) {
+        newErrors.available = 'Aantal mag niet lager zijn dan 0';
     }
 
     errors.value = newErrors;
@@ -135,7 +226,8 @@ function validateProduct(product: Product) {
 function openEdit(product: Product) {
     editingProduct.value = {
         ...product,
-        imageFile: null,
+        imageEntries: [...(product.imageEntries || [])],
+        frontImageId: product.frontImageId || null,
     };
 
     errors.value = {};
@@ -149,10 +241,19 @@ function openCreate() {
         type: '',
         info: '',
         category: '',
-        available: 1,
+        available: 0,
         enabled: true,
+
         image: null,
-        imageFile: null,
+        imageUrl: null,
+
+        images: [],
+        imageUrls: [],
+
+        imageEntries: [],
+        frontImageId: null,
+
+        youtubeVideo: '',
     };
 
     errors.value = {};
@@ -176,10 +277,25 @@ function handleModalOpen(value: boolean) {
     closeModal();
 }
 
-function handleImageChange(file: File | null) {
+function handleGalleryChange(payload: {
+    entries: ProductImage[];
+    frontImageId: string | null;
+}) {
     if (!editingProduct.value) return;
 
-    editingProduct.value.imageFile = file;
+    const frontEntry =
+        payload.entries.find((entry) => entry.id === payload.frontImageId) ||
+        payload.entries[0] ||
+        null;
+
+    editingProduct.value.imageEntries = payload.entries;
+    editingProduct.value.frontImageId = frontEntry?.id || null;
+    editingProduct.value.image = frontEntry?.path || null;
+    editingProduct.value.imageUrl = frontEntry?.previewUrl || null;
+    editingProduct.value.images = payload.entries
+        .filter((entry) => entry.id !== frontEntry?.id)
+        .map((entry) => entry.path)
+        .filter(Boolean) as string[];
 }
 
 async function saveProduct() {
@@ -190,17 +306,40 @@ async function saveProduct() {
     errors.value = {};
 
     const product = editingProduct.value;
+    const entries = product.imageEntries || [];
+    const frontEntry =
+        entries.find((entry) => entry.id === product.frontImageId) ||
+        entries[0] ||
+        null;
 
     const formData = new FormData();
+
     formData.append('item_name', product.name.trim());
+    formData.append('type', product.type || product.category || '');
     formData.append('category', product.category);
     formData.append('description', product.info || '');
     formData.append('quantity_available', String(Number(product.available)));
     formData.append('status', product.enabled ? 'available' : 'unavailable');
+    formData.append('video_link', product.youtubeVideo || '');
 
-    if (product.imageFile) {
-        formData.append('image', product.imageFile);
+    if (frontEntry?.file) {
+        formData.append('image', frontEntry.file);
+    } else if (frontEntry?.path) {
+        formData.append('image_path', frontEntry.path);
     }
+
+    entries.forEach((entry) => {
+        if (entry.id === frontEntry?.id) return;
+
+        if (entry.file) {
+            formData.append('image_files[]', entry.file);
+            return;
+        }
+
+        if (entry.path) {
+            formData.append('images[]', entry.path);
+        }
+    });
 
     const url = isCreating.value
         ? '/products/store'
@@ -267,7 +406,7 @@ async function deleteProduct(product: Product) {
         products.value = products.value.filter((item) => item.id !== product.id);
     } catch (err) {
         console.error(err);
-        alert('Fout bij verwijderen van product');
+        alert('Fout bij verwijderen');
     }
 }
 
@@ -277,7 +416,7 @@ onMounted(() => {
 </script>
 
 <template>
-    <UContainer class="px-3 pt-[clamp(28px,6vw,61px)] pb-14 sm:px-5">
+    <UContainer class="px-3 pb-14 pt-[clamp(28px,6vw,61px)] sm:px-5">
         <div class="flex items-start justify-between gap-4">
             <UPageHeader
                 v-bind="page"
@@ -285,21 +424,20 @@ onMounted(() => {
                     root: 'border-0 py-0',
                     container: 'px-0 sm:px-0 lg:px-0',
                     title: 'text-[clamp(38px,7vw,40px)] font-bold leading-tight tracking-[-0.03em] text-black',
-                    description:
-                        'mt-2 text-[clamp(18px,4vw,20px)] font-normal leading-snug tracking-wide text-magazijn-gray',
+                    description: 'mt-2 text-[clamp(18px,4vw,20px)] font-normal leading-snug tracking-wide text-magazijn-gray',
                 }"
             />
 
             <UButton
                 size="xl"
-                class="rounded-[10px] bg-magazijn-purple px-5 text-white"
+                color="neutral"
+                class="rounded-[10px] bg-magazijn-purple px-5 text-magazijn-white hover:bg-magazijn-purple"
                 @click="openCreate"
             >
                 + Nieuw Product
             </UButton>
         </div>
 
-        <!-- Search -->
         <section class="mt-8">
             <UInput
                 v-model="search"
@@ -314,21 +452,21 @@ onMounted(() => {
             />
         </section>
 
-        <!-- Loading -->
         <div v-if="loading" class="py-10 text-center">
             <UIcon
                 name="i-lucide-loader-circle"
                 class="mx-auto h-7 w-7 animate-spin text-magazijn-purple"
             />
-            <p class="mt-2 text-magazijn-gray">Producten laden...</p>
+
+            <p class="mt-2 text-magazijn-gray">
+                Producten laden...
+            </p>
         </div>
 
-        <!-- Error -->
-        <div v-else-if="error" class="py-10 text-center text-red-500">
+        <div v-else-if="error" class="py-10 text-center text-magazijn-red">
             {{ error }}
         </div>
 
-        <!-- Producten -->
         <div v-else class="mt-10 space-y-5">
             <div
                 v-if="visibleProducts.length === 0"
@@ -349,23 +487,23 @@ onMounted(() => {
         <UModal
             :open="isModalOpen"
             :ui="{
-        overlay: 'z-[1000]',
-        content: 'z-[1001] w-full max-w-[600px] max-h-[90dvh] overflow-hidden',
-    }"
+                overlay: 'z-[1000]',
+                content: 'z-[1001] w-full max-w-[640px] max-h-[92dvh] overflow-hidden rounded-[18px] bg-magazijn-white',
+            }"
             @update:open="handleModalOpen"
         >
             <template #content>
                 <UCard
-                    class="w-full bg-gray-100"
+                    class="w-full bg-magazijn-white"
                     :ui="{
-                root: 'max-h-[90dvh] overflow-hidden flex flex-col',
-                header: 'shrink-0',
-                body: 'overflow-y-auto',
-                footer: 'shrink-0',
-            }"
+                        root: 'max-h-[92dvh] overflow-hidden flex flex-col rounded-[18px] bg-magazijn-white ring-1 ring-magazijn-purple-soft',
+                        header: 'shrink-0 border-b border-magazijn-purple-soft bg-magazijn-white px-8 py-6',
+                        body: 'overflow-y-auto bg-magazijn-white px-8 py-7 sm:px-8 sm:py-7',
+                        footer: 'hidden',
+                    }"
                 >
                     <template #header>
-                        <h2 class="text-lg font-bold">
+                        <h2 class="text-2xl font-bold text-magazijn-purple">
                             {{
                                 isCreating
                                     ? 'Nieuw product'
@@ -379,29 +517,9 @@ onMounted(() => {
                         :product="editingProduct"
                         :is-new="isCreating"
                         :errors="errors"
-                        @image-change="handleImageChange"
+                        @gallery-change="handleGalleryChange"
+                        @save="saveProduct"
                     />
-
-                    <template #footer>
-                        <div class="flex justify-end gap-3">
-                            <UButton
-                                variant="ghost"
-                                :disabled="saving"
-                                @click="closeModal"
-                            >
-                                Annuleren
-                            </UButton>
-
-                            <UButton
-                                class="bg-magazijn-purple text-white"
-                                :loading="saving"
-                                :disabled="saving"
-                                @click="saveProduct"
-                            >
-                                Opslaan
-                            </UButton>
-                        </div>
-                    </template>
                 </UCard>
             </template>
         </UModal>

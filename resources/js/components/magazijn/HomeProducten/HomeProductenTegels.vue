@@ -20,7 +20,9 @@ const emit = defineEmits(['select', 'play-video']);
         @keydown.enter="emit('select', product)"
         @keydown.space.prevent="emit('select', product)"
     >
-        <div class="relative h-[clamp(210px,45vw,214px)] overflow-hidden bg-magazijn-purple">
+        <div
+            class="relative h-[clamp(210px,45vw,214px)] overflow-hidden bg-magazijn-purple"
+        >
             <HomeProductenTegelCarouselViewer
                 :product="product"
                 autoplay-on-hover
@@ -40,7 +42,9 @@ const emit = defineEmits(['select', 'play-video']);
         </div>
 
         <div class="relative h-[134px] bg-magazijn-white px-3 pt-4">
-            <h2 class="max-w-[calc(100%-48px)] truncate text-[22px] font-bold leading-7 tracking-[-0.02em] text-black">
+            <h2
+                class="max-w-[calc(100%-48px)] truncate text-[22px] font-bold leading-7 tracking-[-0.02em] text-black"
+            >
                 {{ product.name }}
             </h2>
 
@@ -48,7 +52,9 @@ const emit = defineEmits(['select', 'play-video']);
                 {{ product.type }}
             </p>
 
-            <p class="mt-[14px] truncate text-[16px] leading-5 text-magazijn-gray">
+            <p
+                class="mt-[14px] truncate text-[16px] leading-5 text-magazijn-gray"
+            >
                 {{ product.info }}
             </p>
 

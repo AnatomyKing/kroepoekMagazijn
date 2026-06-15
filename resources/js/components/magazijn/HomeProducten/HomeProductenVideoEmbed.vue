@@ -23,7 +23,7 @@ watch(
             cachedProduct.value = product;
         }
     },
-    { immediate: true }
+    { immediate: true },
 );
 
 const modalOpen = computed({
@@ -63,13 +63,13 @@ const youtubeEmbedUrl = computed(() => {
         :close="{
             color: 'primary',
             variant: 'ghost',
-            class: 'rounded-full !text-magazijn-purple hover:!bg-magazijn-purple/10'
+            class: 'rounded-full !text-magazijn-purple hover:!bg-magazijn-purple/10',
         }"
         :ui="{
             content: 'max-w-[min(92vw,920px)] overflow-hidden rounded-[18px] bg-magazijn-white ring-1 ring-magazijn-purple-soft',
             header: 'px-5 py-4',
             title: 'text-[22px] font-bold leading-tight text-black',
-            body: 'p-0 sm:p-0'
+            body: 'p-0 sm:p-0',
         }"
     >
         <template #body>
