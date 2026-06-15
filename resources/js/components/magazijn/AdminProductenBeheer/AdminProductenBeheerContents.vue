@@ -27,17 +27,11 @@ type Product = {
     imageUrls?: string[];
 
     imageEntries?: ProductImage[];
-    frontImageId?: string | null;
 
     youtubeVideo?: string | null;
 };
 
 type FormErrors = Record<string, string | string[]>;
-
-const page = {
-    title: 'Producten Beheer',
-    description: 'Producten aanmaken, wijzigen en verwijderen',
-};
 
 const products = ref<Product[]>([]);
 const search = ref('');
@@ -128,7 +122,7 @@ function buildImageEntries(item: any): ProductImage[] {
 
 function mapBackendProduct(item: any): Product {
     const imageEntries = buildImageEntries(item);
-    const frontImage = imageEntries[0] || null;
+    const mainImage = imageEntries[0] || null;
 
     return {
         id: item.id,
@@ -141,9 +135,9 @@ function mapBackendProduct(item: any): Product {
             ? item.status === 'available'
             : Number(item.quantity_available ?? 0) > 0,
 
-        image: frontImage?.path || item.image || null,
+        image: mainImage?.path || item.image || null,
         imageUrl:
-            frontImage?.previewUrl ||
+            mainImage?.previewUrl ||
             item.image_url ||
             normalizeImageUrl(item.image),
 
@@ -151,7 +145,6 @@ function mapBackendProduct(item: any): Product {
         imageUrls: Array.isArray(item.images_urls) ? item.images_urls : [],
 
         imageEntries,
-        frontImageId: frontImage?.id || null,
 
         youtubeVideo: item.video_link || '',
     };
@@ -226,8 +219,7 @@ function validateProduct(product: Product) {
 function openEdit(product: Product) {
     editingProduct.value = {
         ...product,
-        imageEntries: [...(product.imageEntries || [])],
-        frontImageId: product.frontImageId || null,
+        imageEntries: (product.imageEntries || []).map((entry) => ({ ...entry })),
     };
 
     errors.value = {};
@@ -251,7 +243,6 @@ function openCreate() {
         imageUrls: [],
 
         imageEntries: [],
-        frontImageId: null,
 
         youtubeVideo: '',
     };
@@ -277,29 +268,23 @@ function handleModalOpen(value: boolean) {
     closeModal();
 }
 
-function handleGalleryChange(payload: {
-    entries: ProductImage[];
-    frontImageId: string | null;
-}) {
+function handleGalleryChange(payload: { entries: ProductImage[] }) {
     if (!editingProduct.value) return;
 
-    const frontEntry =
-        payload.entries.find((entry) => entry.id === payload.frontImageId) ||
-        payload.entries[0] ||
-        null;
+    const mainEntry = payload.entries[0] || null;
 
     editingProduct.value.imageEntries = payload.entries;
-    editingProduct.value.frontImageId = frontEntry?.id || null;
-    editingProduct.value.image = frontEntry?.path || null;
-    editingProduct.value.imageUrl = frontEntry?.previewUrl || null;
+    editingProduct.value.image = mainEntry?.path || null;
+    editingProduct.value.imageUrl = mainEntry?.previewUrl || null;
     editingProduct.value.images = payload.entries
-        .filter((entry) => entry.id !== frontEntry?.id)
+        .slice(1)
         .map((entry) => entry.path)
         .filter(Boolean) as string[];
 }
 
 async function saveProduct() {
     if (!editingProduct.value) return;
+    if (saving.value) return;
     if (!validateProduct(editingProduct.value)) return;
 
     saving.value = true;
@@ -307,10 +292,8 @@ async function saveProduct() {
 
     const product = editingProduct.value;
     const entries = product.imageEntries || [];
-    const frontEntry =
-        entries.find((entry) => entry.id === product.frontImageId) ||
-        entries[0] ||
-        null;
+    const mainEntry = entries[0] || null;
+    const extraEntries = entries.slice(1);
 
     const formData = new FormData();
 
@@ -321,16 +304,15 @@ async function saveProduct() {
     formData.append('quantity_available', String(Number(product.available)));
     formData.append('status', product.enabled ? 'available' : 'unavailable');
     formData.append('video_link', product.youtubeVideo || '');
+    formData.append('gallery_submitted', '1');
 
-    if (frontEntry?.file) {
-        formData.append('image', frontEntry.file);
-    } else if (frontEntry?.path) {
-        formData.append('image_path', frontEntry.path);
+    if (mainEntry?.file) {
+        formData.append('image', mainEntry.file);
+    } else if (mainEntry?.path) {
+        formData.append('image_path', mainEntry.path);
     }
 
-    entries.forEach((entry) => {
-        if (entry.id === frontEntry?.id) return;
-
+    extraEntries.forEach((entry) => {
         if (entry.file) {
             formData.append('image_files[]', entry.file);
             return;
@@ -416,72 +398,78 @@ onMounted(() => {
 </script>
 
 <template>
-    <UContainer class="px-3 pb-14 pt-[clamp(28px,6vw,61px)] sm:px-5">
-        <div class="flex items-start justify-between gap-4">
-            <UPageHeader
-                v-bind="page"
-                :ui="{
-                    root: 'border-0 py-0',
-                    container: 'px-0 sm:px-0 lg:px-0',
-                    title: 'text-[clamp(38px,7vw,40px)] font-bold leading-tight tracking-[-0.03em] text-black',
-                    description: 'mt-2 text-[clamp(18px,4vw,20px)] font-normal leading-snug tracking-wide text-magazijn-gray',
-                }"
-            />
+    <UContainer class="px-3 pb-14 pt-[clamp(28px,6vw,32px)] sm:px-5">
+        <div class="max-w-[1180px]">
+            <div class="flex items-start justify-between gap-4">
+                <div>
+                    <h1
+                        class="text-[clamp(34px,5vw,38px)] font-bold leading-tight tracking-[-0.03em] text-black"
+                    >
+                        Producten Beheer
+                    </h1>
 
-            <UButton
-                size="xl"
-                color="neutral"
-                class="rounded-[10px] bg-magazijn-purple px-5 text-magazijn-white hover:bg-magazijn-purple"
-                @click="openCreate"
-            >
-                + Nieuw Product
-            </UButton>
-        </div>
+                    <p
+                        class="mt-2 text-[clamp(18px,3vw,20px)] font-normal leading-snug tracking-wide text-magazijn-gray"
+                    >
+                        Producten aanmaken, wijzigen en verwijderen
+                    </p>
+                </div>
 
-        <section class="mt-8">
-            <UInput
-                v-model="search"
-                icon="i-lucide-search"
-                placeholder="Zoek op product..."
-                size="xl"
-                class="w-full"
-                :ui="{
-                    base: 'h-[46px] rounded-[10px] bg-magazijn-white text-[14px] text-magazijn-purple shadow-sm ring-1 ring-magazijn-purple-soft placeholder:text-magazijn-gray focus-visible:ring-2 focus-visible:ring-magazijn-purple',
-                    leadingIcon: 'text-magazijn-gray',
-                }"
-            />
-        </section>
-
-        <div v-if="loading" class="py-10 text-center">
-            <UIcon
-                name="i-lucide-loader-circle"
-                class="mx-auto h-7 w-7 animate-spin text-magazijn-purple"
-            />
-
-            <p class="mt-2 text-magazijn-gray">
-                Producten laden...
-            </p>
-        </div>
-
-        <div v-else-if="error" class="py-10 text-center text-magazijn-red">
-            {{ error }}
-        </div>
-
-        <div v-else class="mt-10 space-y-5">
-            <div
-                v-if="visibleProducts.length === 0"
-                class="py-10 text-center text-magazijn-gray"
-            >
-                Geen producten gevonden.
+                <UButton
+                    size="xl"
+                    color="neutral"
+                    class="rounded-[10px] bg-magazijn-purple px-5 text-magazijn-white hover:bg-magazijn-purple"
+                    @click="openCreate"
+                >
+                    + Nieuw Product
+                </UButton>
             </div>
 
-            <AdminProductenBeheerTegels
-                v-for="product in visibleProducts"
-                :key="product.id"
-                :product="product"
-                @edit="openEdit"
-                @delete="deleteProduct"
-            />
+            <section class="mt-9">
+                <UInput
+                    v-model="search"
+                    icon="i-lucide-search"
+                    placeholder="Zoek op product..."
+                    size="xl"
+                    class="w-full"
+                    :ui="{
+                        base: 'h-[46px] rounded-[10px] bg-magazijn-white text-[14px] text-magazijn-purple shadow-sm ring-1 ring-magazijn-purple-soft placeholder:text-magazijn-gray focus-visible:ring-2 focus-visible:ring-magazijn-purple',
+                        leadingIcon: 'text-magazijn-gray',
+                    }"
+                />
+            </section>
+
+            <div v-if="loading" class="py-12 text-center">
+                <UIcon
+                    name="i-lucide-loader-circle"
+                    class="mx-auto h-7 w-7 animate-spin text-magazijn-purple"
+                />
+
+                <p class="mt-2 text-magazijn-gray">
+                    Producten laden...
+                </p>
+            </div>
+
+            <div v-else-if="error" class="py-12 text-center text-magazijn-red">
+                {{ error }}
+            </div>
+
+            <div v-else class="mt-10 space-y-5">
+                <div
+                    v-if="visibleProducts.length === 0"
+                    class="rounded-[18px] border border-magazijn-purple-soft bg-magazijn-white py-10 text-center text-magazijn-gray"
+                >
+                    Geen producten gevonden.
+                </div>
+
+                <AdminProductenBeheerTegels
+                    v-for="product in visibleProducts"
+                    :key="product.id"
+                    :product="product"
+                    @edit="openEdit"
+                    @delete="deleteProduct"
+                />
+            </div>
         </div>
 
         <UModal

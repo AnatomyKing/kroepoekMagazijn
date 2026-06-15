@@ -25,7 +25,6 @@ type Product = {
     imageUrls?: string[];
 
     imageEntries?: ProductImage[];
-    frontImageId?: string | null;
 
     youtubeVideo?: string | null;
 };
@@ -48,7 +47,6 @@ const emit = defineEmits<{
         e: 'gallery-change',
         payload: {
             entries: ProductImage[];
-            frontImageId: string | null;
         },
     ): void;
     (e: 'save'): void;
@@ -69,7 +67,6 @@ const categories = [
 const quantities = Array.from({ length: 21 }, (_, i) => i);
 
 const imageEntries = ref<ProductImage[]>([]);
-const frontImageId = ref<string | null>(null);
 const carousel = ref<any>(null);
 const addInput = ref<HTMLInputElement | null>(null);
 const replaceInput = ref<HTMLInputElement | null>(null);
@@ -83,19 +80,22 @@ const youtubeVideoModel = computed<string>({
 });
 
 const productImages = computed(() => imageEntries.value);
-
 const hasImages = computed(() => productImages.value.length > 0);
-
 const hasMultipleImages = computed(() => productImages.value.length > 1);
+const mainImageId = computed(() => imageEntries.value[0]?.id || null);
+
+const carouselKey = computed(() => {
+    return imageEntries.value
+        .map((entry) => `${entry.id}-${entry.previewUrl}-${entry.path}`)
+        .join('|');
+});
 
 watch(
     () => props.product,
     (product) => {
-        imageEntries.value = [...(product.imageEntries || [])];
-        frontImageId.value =
-            product.frontImageId ||
-            imageEntries.value[0]?.id ||
-            null;
+        imageEntries.value = (product.imageEntries || []).map((entry) => ({
+            ...entry,
+        }));
 
         emitGalleryChange();
     },
@@ -121,7 +121,6 @@ function errorText(...keys: string[]) {
 function emitGalleryChange() {
     emit('gallery-change', {
         entries: imageEntries.value,
-        frontImageId: frontImageId.value,
     });
 }
 
@@ -129,8 +128,40 @@ function scrollNext() {
     carousel.value?.emblaApi?.scrollNext();
 }
 
-function selectFrontImage(id: string) {
-    frontImageId.value = id;
+function makeMainImage(id: string) {
+    const index = imageEntries.value.findIndex((entry) => entry.id === id);
+
+    if (index <= 0) {
+        emitGalleryChange();
+        return;
+    }
+
+    const [selectedEntry] = imageEntries.value.splice(index, 1);
+
+    imageEntries.value.unshift(selectedEntry);
+
+    requestAnimationFrame(() => {
+        carousel.value?.emblaApi?.scrollTo?.(0);
+    });
+
+    emitGalleryChange();
+}
+
+function removeImage(id: string) {
+    const index = imageEntries.value.findIndex((entry) => entry.id === id);
+
+    if (index === -1) return;
+
+    const [removedEntry] = imageEntries.value.splice(index, 1);
+
+    if (removedEntry?.isNew && removedEntry.previewUrl) {
+        URL.revokeObjectURL(removedEntry.previewUrl);
+    }
+
+    requestAnimationFrame(() => {
+        carousel.value?.emblaApi?.scrollTo?.(0);
+    });
+
     emitGalleryChange();
 }
 
@@ -158,10 +189,6 @@ function addUploadedImages(event: Event) {
     }));
 
     imageEntries.value.push(...newEntries);
-
-    if (!frontImageId.value) {
-        frontImageId.value = newEntries[0]?.id || null;
-    }
 
     target.value = '';
     emitGalleryChange();
@@ -197,6 +224,7 @@ function replaceImage(event: Event) {
 
     target.value = '';
     replaceTargetId.value = null;
+
     emitGalleryChange();
 }
 </script>
@@ -220,7 +248,6 @@ function replaceImage(event: Event) {
             @change="replaceImage"
         />
 
-        <!-- Naam -->
         <div>
             <label class="mb-2 block text-sm font-semibold text-black">
                 Naam product
@@ -243,7 +270,6 @@ function replaceImage(event: Event) {
             </p>
         </div>
 
-        <!-- Categorie -->
         <div>
             <label class="mb-2 block text-sm font-semibold text-black">
                 Categorie
@@ -269,7 +295,6 @@ function replaceImage(event: Event) {
             </p>
         </div>
 
-        <!-- Beschrijving -->
         <div>
             <label class="mb-2 block text-sm font-semibold text-black">
                 Beschrijving
@@ -293,7 +318,6 @@ function replaceImage(event: Event) {
             </p>
         </div>
 
-        <!-- Foto -->
         <div>
             <label class="mb-2 block text-sm font-semibold text-black">
                 Product foto
@@ -304,6 +328,7 @@ function replaceImage(event: Event) {
                 class="relative h-[170px] overflow-hidden rounded-[14px] border-2 border-dashed border-magazijn-purple bg-magazijn-purple"
             >
                 <UCarousel
+                    :key="carouselKey"
                     ref="carousel"
                     v-slot="{ item }"
                     loop
@@ -317,58 +342,78 @@ function replaceImage(event: Event) {
                         item: 'h-full basis-full !ps-0',
                     }"
                 >
-                    <button
-                        type="button"
-                        class="relative block h-full w-full"
-                        @click="openReplaceUpload(item.id)"
-                    >
-                        <img
-                            v-if="item.previewUrl"
-                            :src="item.previewUrl ?? undefined"
-                            :alt="product.name"
-                            class="block h-full w-full object-cover object-center"
-                            draggable="false"
-                        />
+                    <div class="relative h-full w-full">
+                        <button
+                            type="button"
+                            class="relative block h-full w-full"
+                            @click="openReplaceUpload(item.id)"
+                        >
+                            <img
+                                v-if="item.previewUrl"
+                                :src="item.previewUrl ?? undefined"
+                                :alt="product.name"
+                                class="block h-full w-full object-cover object-center"
+                                draggable="false"
+                            />
+
+                            <div
+                                v-else
+                                class="flex h-full w-full items-center justify-center text-center text-[18px] font-bold text-magazijn-white"
+                            >
+                                {{ product.name }}
+                            </div>
+
+                            <div
+                                class="pointer-events-none absolute inset-0 bg-black/10"
+                            />
+
+                            <span
+                                class="absolute bottom-3 left-3 rounded-full bg-magazijn-purple px-3 py-1 text-xs font-semibold text-magazijn-white"
+                            >
+                                Klik om te vervangen
+                            </span>
+                        </button>
 
                         <div
-                            v-else
-                            class="flex h-full w-full items-center justify-center text-center text-[18px] font-bold text-magazijn-white"
+                            class="absolute right-4 top-4 z-[60] flex items-center gap-2"
                         >
-                            {{ product.name }}
+                            <UButton
+                                type="button"
+                                icon="i-lucide-heart"
+                                aria-label="Maak hoofdafbeelding"
+                                color="neutral"
+                                variant="solid"
+                                class="!grid size-10 !place-items-center rounded-full !p-0 shadow-lg transition hover:scale-110 active:scale-95"
+                                :class="
+                                    mainImageId === item.id
+                                        ? 'bg-magazijn-red text-magazijn-white hover:bg-magazijn-red'
+                                        : 'bg-magazijn-purple text-magazijn-white hover:bg-magazijn-purple'
+                                "
+                                :ui="{
+                                    base: '!gap-0 !p-0',
+                                    leadingIcon:
+                                        mainImageId === item.id
+                                            ? 'size-5 fill-current'
+                                            : 'size-5',
+                                }"
+                                @click.stop="makeMainImage(item.id)"
+                            />
+
+                            <UButton
+                                type="button"
+                                icon="i-lucide-trash"
+                                aria-label="Verwijder afbeelding"
+                                color="neutral"
+                                variant="solid"
+                                class="!grid size-10 !place-items-center rounded-full bg-magazijn-red !p-0 text-magazijn-white shadow-lg transition hover:scale-110 hover:bg-magazijn-red active:scale-95"
+                                :ui="{
+                                    base: '!gap-0 !p-0',
+                                    leadingIcon: 'size-5',
+                                }"
+                                @click.stop="removeImage(item.id)"
+                            />
                         </div>
-
-                        <div
-                            class="pointer-events-none absolute inset-0 bg-black/10"
-                        />
-
-                        <span
-                            class="absolute bottom-3 left-3 rounded-full bg-magazijn-purple px-3 py-1 text-xs font-semibold text-magazijn-white"
-                        >
-                            Klik om te vervangen
-                        </span>
-                    </button>
-
-                    <UButton
-                        type="button"
-                        icon="i-lucide-heart"
-                        aria-label="Maak hoofd afbeelding"
-                        color="neutral"
-                        variant="solid"
-                        class="absolute right-4 top-4 z-20 !grid size-10 !place-items-center rounded-full !p-0 shadow-md transition hover:scale-110 active:scale-95"
-                        :class="
-                            frontImageId === item.id
-                                ? 'bg-magazijn-red text-magazijn-white hover:bg-magazijn-red'
-                                : 'bg-magazijn-purple text-magazijn-white hover:bg-magazijn-purple'
-                        "
-                        :ui="{
-                            base: '!gap-0 !p-0',
-                            leadingIcon:
-                                frontImageId === item.id
-                                    ? 'size-5 fill-current'
-                                    : 'size-5',
-                        }"
-                        @click.stop="selectFrontImage(item.id)"
-                    />
+                    </div>
                 </UCarousel>
 
                 <UButton
@@ -439,7 +484,6 @@ function replaceImage(event: Event) {
             </p>
         </div>
 
-        <!-- Aantal -->
         <div>
             <label class="mb-2 block text-sm font-semibold text-black">
                 Aantal eenheden
@@ -464,7 +508,6 @@ function replaceImage(event: Event) {
             </p>
         </div>
 
-        <!-- Beschikbaar -->
         <div
             class="flex items-center justify-between rounded-[12px] border border-magazijn-purple-soft bg-magazijn-white px-4 py-3"
         >
@@ -487,7 +530,6 @@ function replaceImage(event: Event) {
             />
         </div>
 
-        <!-- Video -->
         <div>
             <label class="mb-2 block text-sm font-semibold text-black">
                 YouTube video
